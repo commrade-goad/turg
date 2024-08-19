@@ -5,10 +5,6 @@
 #include <string.h>
 #include "../raylib-5.0_linux_amd64/include/raylib.h"
 
-// TODO:
-// -- add win screen dont exit if its win.
-// -- OPTIONAL : make gui/menu for it
-
 // defining some constant -> window height, width, and player font size.
 #define WIN_W 1280
 #define WIN_H 720
