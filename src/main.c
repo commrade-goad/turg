@@ -144,6 +144,8 @@ int main (void) {
 
     // counter for how many beads is out / on board.
     int cameout[2] = {0, 0};
+
+    // point system.
     int point[2] = {0, 0};
 
     // handle extra turn
@@ -197,7 +199,7 @@ int main (void) {
             state = WIN;
         } 
 
-        // get the biggest pos n save the pos and index.
+        // finish checker.
         for (int i = 0; i < 7; i++) {
             if (player[turn][i].pos == 15) {
                 point[turn] += 1;
@@ -207,7 +209,6 @@ int main (void) {
         }
 
         // Handle input.
-        // this keys is used for debug only.
         if (IsKeyPressed(' ')) {
             incrementTurn(&turn);
             move = setup_dice(str);
@@ -260,9 +261,11 @@ int main (void) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
+                        break;
                     }
-                    if (check_move(*player, i, move)) {
+                    if (check_move(*player, i, move) == 1) {
                         ignore_key = 1;
+                        break;
                     }
                 }
                 if (ignore_key == 0 && player[turn][i].pos < 15 && player[turn][i].pos + move <= 15) {
@@ -344,35 +347,9 @@ int main (void) {
                     int pos = player[j][i].pos;
                     if (pos == 0) {}
                     Rectangle bead_dest = {};
-                    if (pos == 1) {
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * 4);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
-                        bead_dest.width = bead_w * bead_scale;
-                        bead_dest.height = bead_h * bead_scale;
-                        if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
-                        }
-                    }
-                    if (pos == 2) {
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * 5);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
-                        bead_dest.width = bead_w * bead_scale;
-                        bead_dest.height = bead_h * bead_scale;
-                        if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
-                        }
-                    }
-                    if (pos == 3) {
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * 6);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
-                        bead_dest.width = bead_w * bead_scale;
-                        bead_dest.height = bead_h * bead_scale;
-                        if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
-                        }
-                    }
-                    if (pos == 4) {
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * 7);
+                    if (pos >= 1 && pos <= 4) {
+                        int grid = 3 + pos;
+                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * grid);
                         bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
