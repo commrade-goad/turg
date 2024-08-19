@@ -48,6 +48,12 @@ int setup_dice(char *str) {
     return move;
 }
 
+void check_victory(int point[2], enum GameState *state, int turn) {
+    if (point[turn] >=7) {
+        *state = WIN;
+    }
+}
+
 /* int check_move(const struct GameObject obj[7], size_t idx, int move) {
     int cur_pos = obj[idx].pos;
     int *temp_buf = NULL;
@@ -171,6 +177,7 @@ int main (void) {
 
     // point system.
     int point[2] = {0, 0};
+    int winner_idx = -1;
 
     // handle extra turn
     int extra_turn = 0;
@@ -218,19 +225,9 @@ int main (void) {
             continue;
         }
 
-        // check victory. maybe will be moved to after move
-        if (point[turn] >=7) {
-            state = WIN;
-        }
-
-        // finish checker.
         for (int i = 0; i < 7; i++) {
-            if (player[turn][i].pos == 15) {
-                point[turn] += 1;
-                player[turn][i].pos = 0;
-                player[turn][i].finished = 1;
-                break;
-            }
+            if (player[0][i].pos == 0) player[0][i].onBoard = 0;
+            if (player[1][i].pos == 0) player[1][i].onBoard = 0;
         }
 
         // Handle input.
@@ -259,11 +256,11 @@ int main (void) {
             }
             if (ignore_key == 0) {
                 for (int i = 0; i < 7; i++) {
-                    if (check_move(player[turn], i, move) == 1) {
-                        ignore_key = 1;
-                        break;
-                    }
-                    if (!player[turn][i].onBoard) {
+                    if (player[turn][i].onBoard == 0 && player[turn][i].finished == 0 && player[turn][i].pos == 0) {
+                        if (check_move(player[turn], i, move) == 1) {
+                            ignore_key = 1;
+                            break;
+                        }
                         player[turn][i].onBoard = 1;
                         player[turn][i].finished= 0;
                         player[turn][i].pos = move;
@@ -289,6 +286,8 @@ int main (void) {
                 }
                 cameout[j] = 0;
             }
+            point[0] = 0;
+            point[1] = 0;
             incrementTurn(&turn);
             move = setup_dice(str);
             state = GAME;
@@ -326,6 +325,19 @@ int main (void) {
                             break;
                         }
                     }
+
+                    // finish checker at this point bcs the only way to win is from tapping this button.
+                    for (int i = 0; i < 7; i++) {
+                        if (player[turn][i].pos == 15) {
+                            point[turn] += 1;
+                            player[turn][i].pos = 0;
+                            player[turn][i].finished = 1;
+                            break;
+                        }
+                    }
+                    winner_idx = turn;
+                    check_victory(point, &state, turn);
+
                     // add extra turn.
                     if (!extra_turn) {
                         incrementTurn(&turn);
@@ -442,15 +454,17 @@ int main (void) {
             }
         }
         // draw the tooltip.
+        Color team_color[2] = {GetColor(0x333333dd), GetColor(0xffffffaa)};
+        Color team_color_text[2] = {WHITE, BLACK};
         for (int i = 0; i < 7; i++) {
-            DrawRectanglePro(tooltip_pos[i].box, origin, 0.0f, GetColor(0xffffffaa));
-            DrawText(tooltip_pos[i].text, tooltip_pos[i].text_pos.x, tooltip_pos[i].text_pos.y, 24, BLACK);
+            DrawRectanglePro(tooltip_pos[i].box, origin, 0.0f, team_color[turn]);
+            DrawText(tooltip_pos[i].text, tooltip_pos[i].text_pos.x, tooltip_pos[i].text_pos.y, 24, team_color_text[turn]);
         }
 
         if (state == WIN) {
             char win_buf[32] = {};
             char *res_buf = "Press `r` to reset the game.";
-            snprintf(win_buf, 32, "PLAYER %d WIN", turn+1);
+            snprintf(win_buf, 32, "PLAYER %d WIN", winner_idx+1);
             DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x000000cc));
             DrawText(win_buf, ((float)WIN_W / 2) - ((float)MeasureText(win_buf, 48)/2), ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
             DrawText(res_buf, ((float)WIN_W / 2) - ((float)MeasureText(res_buf, 24)/2), ((float)WIN_H / 2) - ((float)48 / 2) + 48, 24, GRAY);
