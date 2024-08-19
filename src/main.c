@@ -54,36 +54,7 @@ void check_victory(int point[2], enum GameState *state, int turn) {
     }
 }
 
-/* int check_move(const struct GameObject obj[7], size_t idx, int move) {
-    int cur_pos = obj[idx].pos;
-    int *temp_buf = NULL;
-    size_t counter = 0;
-
-    temp_buf = malloc(sizeof(int));
-    for (int i = 0; i < 7; i++) {
-        if (i != idx && obj[i].pos > cur_pos) {
-            counter += 1;
-            temp_buf = realloc(temp_buf, sizeof(int) * counter);
-            temp_buf[counter - 1] = obj[i].pos;
-        }
-    }
-
-    if (counter == 0) {
-        free(temp_buf);
-        return 0;
-    }
-
-    for (int i = 0; i < counter; i++) {
-        if (cur_pos + move > temp_buf[i]) {
-            free(temp_buf);
-            return 1;
-        }
-    }
-
-    free(temp_buf);
-    return 0;
-} */
-
+#ifdef CUSTOM_MODE
 int check_move(const struct GameObject obj[7], size_t idx, int move) {
     int cur_pos = obj[idx].pos;
     size_t pos_buf[7] = {};
@@ -107,6 +78,7 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
     }
     return 0;
 }
+#endif
 
 int main (void) {
 
@@ -257,15 +229,17 @@ int main (void) {
             if (ignore_key == 0) {
                 for (int i = 0; i < 7; i++) {
                     if (player[turn][i].onBoard == 0 && player[turn][i].finished == 0 && player[turn][i].pos == 0) {
+#ifdef CUSTOM_MODE
                         if (check_move(player[turn], i, move) == 1) {
                             ignore_key = 1;
                             break;
                         }
+#endif
                         player[turn][i].onBoard = 1;
                         player[turn][i].finished= 0;
                         player[turn][i].pos = move;
                         cameout[turn] += 1;
-                        incrementTurn(&turn);
+                        if (move != 4) incrementTurn(&turn);
                         move = setup_dice(str);
                         break;
                     }
@@ -288,7 +262,7 @@ int main (void) {
             }
             point[0] = 0;
             point[1] = 0;
-            incrementTurn(&turn);
+            turn = 0;
             move = setup_dice(str);
             state = GAME;
         }
@@ -301,13 +275,16 @@ int main (void) {
                         ignore_key = 1;
                         break;
                     }
+#ifdef CUSTOM_MODE
                     if (check_move(player[turn], i, move) == 1) {
                         ignore_key = 1;
                         break;
                     }
+#endif
                 }
                 if (ignore_key == 0 && player[turn][i].pos < 15 && player[turn][i].pos + move <= 15) {
                     if (player[turn][i].pos + move == 8) extra_turn = 1;
+                    if (player[turn][i].pos + move == 4) extra_turn = 1;
                     player[turn][i].pos += move;
                     int invert = 0;
                     if (turn == 0) invert = 1;
