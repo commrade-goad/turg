@@ -67,6 +67,7 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
         return 0;
     }
 
+    temp_buf[counter] = 0;
     for (int i = 0; i < counter; i++) {
         if (cur_pos + move > temp_buf[i]) {
             free(temp_buf);
@@ -194,10 +195,10 @@ int main (void) {
             continue;
         }
 
-        // check victory.
+        // check victory. maybe will be moved to after move
         if (point[turn] >=7) {
             state = WIN;
-        } 
+        }
 
         // finish checker.
         for (int i = 0; i < 7; i++) {
@@ -205,6 +206,7 @@ int main (void) {
                 point[turn] += 1;
                 player[turn][i].pos = 0;
                 player[turn][i].finished = 1;
+                break;
             }
         }
 
@@ -220,11 +222,16 @@ int main (void) {
             for (int i = 0; i < 7; i++) {
                 if (player[turn][i].pos == move) {
                     ignore_key = 1;
+                    break;
                 }
             }
             if (ignore_key == 0) {
                 for (int i = 0; i < 7; i++) {
-                    if (!player[turn][i].onBoard && check_move(*player, i, move) == 0) {
+                    if (check_move(player[turn], i, move) == 1) {
+                        ignore_key = 1;
+                        break;
+                    }
+                    if (!player[turn][i].onBoard) {
                         player[turn][i].onBoard = 1;
                         player[turn][i].finished= 0;
                         player[turn][i].pos = move;
@@ -263,7 +270,7 @@ int main (void) {
                         ignore_key = 1;
                         break;
                     }
-                    if (check_move(*player, i, move) == 1) {
+                    if (check_move(player[turn], i, move) == 1) {
                         ignore_key = 1;
                         break;
                     }
@@ -284,6 +291,7 @@ int main (void) {
                             player[invert][k].pos = 0;
                             player[invert][k].onBoard = 0;
                             cameout[invert] -= 1;
+                            break;
                         }
                     }
                     // add extra turn.
