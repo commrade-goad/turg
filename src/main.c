@@ -48,7 +48,7 @@ int setup_dice(char *str) {
     return move;
 }
 
-int check_move(const struct GameObject obj[7], size_t idx, int move) {
+/* int check_move(const struct GameObject obj[7], size_t idx, int move) {
     int cur_pos = obj[idx].pos;
     int *temp_buf = NULL;
     size_t counter = 0;
@@ -56,9 +56,9 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
     temp_buf = malloc(sizeof(int));
     for (int i = 0; i < 7; i++) {
         if (i != idx && obj[i].pos > cur_pos) {
-            temp_buf[counter] = obj[i].pos;
             counter += 1;
-            temp_buf = realloc(temp_buf, sizeof(int) * (counter + 1));
+            temp_buf = realloc(temp_buf, sizeof(int) * counter);
+            temp_buf[counter - 1] = obj[i].pos;
         }
     }
 
@@ -67,7 +67,6 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
         return 0;
     }
 
-    temp_buf[counter] = 0;
     for (int i = 0; i < counter; i++) {
         if (cur_pos + move > temp_buf[i]) {
             free(temp_buf);
@@ -76,6 +75,30 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
     }
 
     free(temp_buf);
+    return 0;
+} */
+
+int check_move(const struct GameObject obj[7], size_t idx, int move) {
+    int cur_pos = obj[idx].pos;
+    size_t pos_buf[7] = {};
+    size_t index = 0;
+
+    for (int i = 0; i < 7; i++) {
+        if (cur_pos < obj[i].pos) {
+            pos_buf[index] = obj[i].pos;
+            printf("pos_buf  : %d\n", obj[i].pos);
+            index += 1;
+        }
+    }
+
+    for (int i = 0; i < index + 1; i++) {
+        if (cur_pos + move > pos_buf[i] && pos_buf[i] > 0) {
+            printf("Not valid because :\n");
+            printf(" index : %d\n", i);
+            printf(" with : %d + %d > %zu\n", cur_pos, move, pos_buf[i]);
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -214,6 +237,15 @@ int main (void) {
         if (IsKeyPressed(' ')) {
             incrementTurn(&turn);
             move = setup_dice(str);
+        }
+        if (IsKeyPressed(KEY_I)) {
+            for (int i = 0; i < 7; i++) {
+                printf("IDX : %d\n", i);
+                printf("  onBoard : %d\n", player[turn][i].onBoard);
+                printf("  pos : %d\n", player[turn][i].pos);
+                printf("  finished : %d\n", player[turn][i].finished);
+                printf("==========================\n");
+            }
         }
 
         // create a bool to check if the current dice pos is already used.
