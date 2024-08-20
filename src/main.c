@@ -276,7 +276,7 @@ int main (void) {
 
         // handle index as the keys.
         for (int i  = 0; i < 7; i++) {
-            if (IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard && !player[turn][i].finished) {
+            if (IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 && player[turn][i].finished == 0) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
@@ -289,9 +289,9 @@ int main (void) {
                     }
 #endif
                 }
+                // def new var that check if its valid
+                int valid = 1;
                 if (ignore_key == 0 && player[turn][i].pos < 15 && player[turn][i].pos + move <= 15) {
-                    if (player[turn][i].pos + move == 8) extra_turn = 1;
-                    if (player[turn][i].pos + move == 4) extra_turn = 1;
                     player[turn][i].pos += move;
                     int invert = 0;
                     if (turn == 0) invert = 1;
@@ -299,6 +299,7 @@ int main (void) {
                         // check for the special tile
                         if (player[turn][i].pos == 8 && player[invert][k].pos == 8) {
                             player[turn][i].pos -= move;
+                            valid = 0;
                             break;
                         }
                         // capturing the other player piece
@@ -308,6 +309,12 @@ int main (void) {
                             cameout[invert] -= 1;
                             break;
                         }
+                    }
+
+                    if (valid == 1) {
+                        int check_me = player[turn][i].pos - move;
+                        if (check_me + move == 8) extra_turn = 1;
+                        if (check_me + move == 4) extra_turn = 1;
                     }
 
                     // finish checker at this point bcs the only way to win is from tapping this button.
