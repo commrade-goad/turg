@@ -10,6 +10,9 @@
 #define WIN_H 720
 #define PLAYER_FONT_SIZE 32
 
+// use real board texture
+#define USER_REAL_BOARD_TEXT
+
 // create game state
 enum GameState {
     GAME,
@@ -90,7 +93,11 @@ int main (void) {
     SetTargetFPS(60);
 
     // load texture.
+#ifdef USER_REAL_BOARD_TEXT
+    Texture2D board = LoadTexture("assets/board-real.png");
+#else
     Texture2D board = LoadTexture("assets/board.png");
+#endif
     Texture2D whiteb = LoadTexture("assets/white.png");
     Texture2D blackb = LoadTexture("assets/black.png");
 
@@ -187,10 +194,10 @@ int main (void) {
             char *menu_buf = "TURG";
             char *menu_opt1_buf = "Press `p` to play.";
             char *menu_opt2_buf = "Press `q` to quit.";
-            DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x000000cc));
+            DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x00000098));
             DrawText(menu_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_buf, 48)/2), ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
-            DrawText(menu_opt1_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt1_buf, 20)/2), ((float)WIN_H / 2) + 48, 20, GRAY);
-            DrawText(menu_opt2_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt2_buf, 20)/2), ((float)WIN_H / 2) + 48 + 25, 20, GRAY);
+            DrawText(menu_opt1_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt1_buf, 20)/2), ((float)WIN_H / 2) + 48, 20, WHITE);
+            DrawText(menu_opt2_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt2_buf, 20)/2), ((float)WIN_H / 2) + 48 + 25, 20, WHITE);
 
             EndDrawing();
 
@@ -268,8 +275,8 @@ int main (void) {
         }
 
         // handle index as the keys.
-        for (int i  = 0; i < 5; i++) {
-            if (IsKeyPressed(i + '0') && player[turn][i].onBoard && !player[turn][i].finished) {
+        for (int i  = 0; i < 7; i++) {
+            if (IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard && !player[turn][i].finished) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
@@ -332,6 +339,7 @@ int main (void) {
 
         // clear the bg.
         ClearBackground(GetColor(0xccccdeff));
+        DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x00000088));
 
         // draw the dice nums, text and some tooltip at the bottom.
         Color tmp_color_arr[2] = {BLACK, RED};
@@ -422,7 +430,7 @@ int main (void) {
                         tooltip_pos[i].box = bead_dest;
                         tooltip_pos[i].text_pos = bead_dest;
                         char tmp_buf[3];
-                        snprintf(tmp_buf, 2, "%d",i); 
+                        snprintf(tmp_buf, 2, "%d",i + 1); 
                         strncpy(tooltip_pos[i].text, tmp_buf, 2);
                         tooltip_pos[i].text_pos.x = bead_dest.x + ((float)bead_dest.width / 2) - ((float)MeasureText(tmp_buf, 24)/2);
                         tooltip_pos[i].text_pos.y = bead_dest.y + ((float)bead_dest.height/4);
