@@ -11,7 +11,9 @@
 #define PLAYER_FONT_SIZE 32
 
 // use real board texture
-#define USER_REAL_BOARD_TEXT
+#define USE_REAL_BOARD_TEXT
+
+// #define DEBUG_MODE
 
 // create game state
 enum GameState {
@@ -93,7 +95,7 @@ int main (void) {
     SetTargetFPS(60);
 
     // load texture.
-#ifdef USER_REAL_BOARD_TEXT
+#ifdef USE_REAL_BOARD_TEXT
     Texture2D board = LoadTexture("assets/board-real.png");
 #else
     Texture2D board = LoadTexture("assets/board.png");
@@ -124,6 +126,10 @@ int main (void) {
     Rectangle destination_board = {(float)WIN_W / 2 - (board_w * 2), (float)WIN_H / 2 - (board_h * 2), board_w * board_scale, board_h * board_scale};
     Vector2 origin = {0,0};
     Rectangle source_bead = {0, 0, bead_w, bead_h};
+
+    const int DefaultGridX = destination_board.x + bead_w;
+    const int DefaultGridY = destination_board.y + bead_h;
+    const int GridJump = 20 * board_scale;
 
     // black bead aka player 1.
     Rectangle destination_bbead = {destination_board.x + (board_w * board_scale) - (bead_w * 7) * bead_scale, destination_board.y - board_h, bead_w * bead_scale, bead_h * bead_scale};
@@ -210,10 +216,22 @@ int main (void) {
         }
 
         // Handle input.
+#ifdef DEBUG_MODE
         if (IsKeyPressed(' ')) {
+#else
+        if (IsKeyPressed(' ') && move == 0) {
+#endif
             incrementTurn(&turn);
             move = setup_dice(str);
         }
+
+#ifdef DEBUG_MODE
+        if (IsKeyPressed(KEY_X)) {
+            player[turn][0].pos = 14;
+            player[turn][0].onBoard = 1;
+        }
+#endif
+
         if (IsKeyPressed(KEY_I)) {
             for (int i = 0; i < 7; i++) {
                 printf("IDX : %d\n", i);
@@ -272,6 +290,24 @@ int main (void) {
             turn = 0;
             move = setup_dice(str);
             state = GAME;
+        }
+
+        if (IsKeyPressed(KEY_M)) {
+            state = MENU;
+            for (int j = 0; j < 2; j++) {
+                for (int i = 0; i < 7; i++) {
+                    player[j][i].onBoard = 0;
+                    player[j][i].finished= 0;
+                    player[j][i].pos = 0;
+                }
+                cameout[j] = 0;
+            }
+            point[0] = 0;
+            point[1] = 0;
+            turn = 0;
+            move = setup_dice(str);
+            state = GAME;
+            continue;
         }
 
         // handle index as the keys.
@@ -359,7 +395,7 @@ int main (void) {
         DrawText("Dice", ((float)WIN_W / 2) - ((float)MeasureText("Dice", 24) / 2), 48 * 2, 24, BLACK);
         DrawText("Select the desired index to move bead.", 0, WIN_H - 20, 20, BLACK);
         DrawText("Press `n` to enter with new bead.", 0, WIN_H - 20 * 2, 20, BLACK);
-        DrawText("The Royal Game of Ur", 10, 10, 36, BLACK);
+        // DrawText("The Royal Game of Ur", 10, 10, 36, BLACK);
 
         // draw the board.
         DrawTexturePro(board, source_board, destination_board, origin, 0.0f, WHITE);
@@ -393,12 +429,12 @@ int main (void) {
                     Rectangle bead_dest = {};
                     if (pos >= 1 && pos <= 4) {
                         int grid = 3 + pos;
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * grid);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
+                        bead_dest.x = DefaultGridX + (grid*GridJump);
+                        bead_dest.y = DefaultGridY + (2*GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
+                            bead_dest.y = DefaultGridY;
                         }
                     }
                     if (pos <= 12 && pos > 4) {
@@ -408,27 +444,27 @@ int main (void) {
                                 calc_grid += 1;
                             }
                         }
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale * (7 - calc_grid));
-                        bead_dest.y = (destination_board.y + (20 * board_scale * 2) - bead_w * bead_scale) - bead_h;
+                        bead_dest.x = DefaultGridX + (GridJump * (7 - calc_grid));
+                        bead_dest.y = DefaultGridY + GridJump;
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                     }
                     if (pos == 13) {
-                        bead_dest.x = (destination_board.x + bead_w);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
+                        bead_dest.x = DefaultGridX;
+                        bead_dest.y = DefaultGridY + (2*GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
+                            bead_dest.y = DefaultGridY;
                         }
                     }
                     if (pos == 14) {
-                        bead_dest.x = (destination_board.x + bead_w) + (20 * board_scale);
-                        bead_dest.y = (destination_board.y + (board_h * board_scale) - bead_w * bead_scale) - bead_h;
+                        bead_dest.x = DefaultGridX + GridJump;
+                        bead_dest.y = DefaultGridY + (2*GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
-                            bead_dest.y = destination_board.y + bead_h;
+                            bead_dest.y = DefaultGridY;
                         }
                     }
                     DrawTexturePro(color_arr[j], source_bead, bead_dest, origin, 0.0f, WHITE);
