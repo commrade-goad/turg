@@ -351,6 +351,7 @@ int main (void) {
                         int check_me = player[turn][i].pos - move;
                         if (check_me + move == 8) extra_turn = 1;
                         if (check_me + move == 4) extra_turn = 1;
+                        if (check_me + move == 14) extra_turn = 1;
                     }
 
                     // finish checker at this point bcs the only way to win is from tapping this button.
