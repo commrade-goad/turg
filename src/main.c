@@ -305,8 +305,6 @@ int main (void) {
             point[0] = 0;
             point[1] = 0;
             turn = 0;
-            move = setup_dice(str);
-            state = GAME;
             continue;
         }
 
