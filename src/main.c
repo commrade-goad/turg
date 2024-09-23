@@ -13,7 +13,7 @@
 // use real board texture
 #define USE_REAL_BOARD_TEXT
 
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // create game state
 enum GameState {
