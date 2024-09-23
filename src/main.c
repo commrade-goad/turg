@@ -227,12 +227,12 @@ int main (void) {
         // Handle input.
 #ifdef DEBUG_MODE
 
-        if (IsKeyPressed(' ') || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move < 1)) {
+        if (IsKeyPressed(' ') || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
             incrementTurn(&turn);
             move = setup_dice(str);
         }
 #else
-        if (IsKeyPressed(' ') && move == 0 || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
+        if (IsKeyPressed(' ') && move == 0 || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
             incrementTurn(&turn);
             move = setup_dice(str);
         }
