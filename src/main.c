@@ -167,6 +167,12 @@ int main (void) {
     // handle extra turn
     int extra_turn = 0;
 
+    // define new bead button pos
+    Rectangle new_bead_btn[2] = {
+        (Rectangle){ .x = destination_board.x, .y = destination_board.y - board_h - PLAYER_FONT_SIZE - 5, .width = 100, .height = 30},
+        (Rectangle){ .x = destination_board.x + (board_w * board_scale) - (18*8) + 40, .y = (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 10, .width = 100, .height = 30},
+    };
+
     // game state.
     enum GameState state = MENU;
 
@@ -178,6 +184,9 @@ int main (void) {
     while (!WindowShouldClose()) {
 
         // game logic.
+
+        // get cursor pos
+        Vector2 cursor_pos = GetMousePosition();
 
         // menu state
         if (state == MENU) {
@@ -218,12 +227,15 @@ int main (void) {
         // Handle input.
 #ifdef DEBUG_MODE
         if (IsKeyPressed(' ')) {
-#else
-        if (IsKeyPressed(' ') && move == 0) {
-#endif
             incrementTurn(&turn);
             move = setup_dice(str);
         }
+#else
+        if (IsKeyPressed(' ') && move == 0) {
+            incrementTurn(&turn);
+            move = setup_dice(str);
+        }
+#endif
 
 #ifdef DEBUG_MODE
         if (IsKeyPressed(KEY_X)) {
@@ -244,7 +256,7 @@ int main (void) {
 
         // create a bool to check if the current dice pos is already used.
         int ignore_key = 0;
-        if (IsKeyPressed(KEY_N) && move > 0) {
+        if (IsKeyPressed(KEY_N) && move > 0 || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
             for (int i = 0; i < 7; i++) {
                 if (player[turn][i].pos == move) {
                     ignore_key = 1;
@@ -405,12 +417,20 @@ int main (void) {
         if (turn == 0) {
             DrawText(buf_poin, WIN_W - MeasureText(buf_poin, 48) - 10, 10, 48, BLACK);
             DrawText("Player 1", destination_board.x, destination_board.y - board_h, PLAYER_FONT_SIZE, BLACK);
+            // new bead button
+            DrawRectangleRec(new_bead_btn[0], BLACK);
+            DrawText("New Bead", destination_board.x + (MeasureText("New Bead", 16) / 5.0f), destination_board.y - board_h - PLAYER_FONT_SIZE, 16, WHITE);
+
             for (int i = cameout[0]; i < 7; i++) {
                 DrawTexturePro(blackb, source_bead, destination_bbead_arr[i], origin, 0.0f, WHITE);
             }
         } else {
             DrawText(buf_poin, WIN_W - MeasureText(buf_poin, 48) - 10, 10, 48, WHITE);
             DrawText("Player 2", destination_board.x + (board_w * board_scale) - (18 * 8), (destination_board.y + board_h * board_scale) + 32, PLAYER_FONT_SIZE, WHITE);
+            // new bead button
+            DrawRectangleRec(new_bead_btn[1], WHITE);
+            DrawText("New Bead", destination_board.x + (board_w * board_scale) - (18 *8) + 40 + (MeasureText("New Bead", 16) / 5.0f), (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 15, 16, BLACK);
+
             for (int i = 0; i < 7 - cameout[1]; i++) {
                 DrawTexturePro(whiteb, source_bead, destination_wbead_arr[i], origin, 0.0f, WHITE);
             }
