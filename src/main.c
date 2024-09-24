@@ -359,7 +359,9 @@ int main(void) {
             if ((IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 &&
                 player[turn][i].finished == 0) ||
                 (CheckCollisionPointRec(cursor_pos, tooltip_pos[i].box) &&
-                IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
+                IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
+                player[turn][i].onBoard == 1 &&
+                player[turn][i].finished == 0)) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
