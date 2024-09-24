@@ -173,6 +173,9 @@ int main (void) {
         (Rectangle){ .x = destination_board.x + (board_w * board_scale) - (18*8) + 40, .y = (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 10, .width = 100, .height = 30},
     };
 
+    // tooltip array
+    struct Tooltip tooltip_pos[7] = {};
+
     // game state.
     enum GameState state = MENU;
 
@@ -323,7 +326,8 @@ int main (void) {
 
         // handle index as the keys.
         for (int i  = 0; i < 7; i++) {
-            if (IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 && player[turn][i].finished == 0) {
+            if ((IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 && player[turn][i].finished == 0)
+                || (CheckCollisionPointRec(cursor_pos, tooltip_pos[i].box) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
@@ -445,9 +449,11 @@ int main (void) {
                 DrawTexturePro(whiteb, source_bead, destination_wbead_arr[i], origin, 0.0f, WHITE);
             }
         }
-        
-        // tooltip array
-        struct Tooltip tooltip_pos[7] = {};
+
+        // MAYBE ITS BROKEN NOW
+        for (int x = 0; x < 7; x++) {
+            tooltip_pos[x] = (struct Tooltip){};
+        }
         // drawing the bead at the table / board.
         Texture2D color_arr[2] = {blackb, whiteb};
         for (int j = 0; j < 2; j++) {
