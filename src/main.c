@@ -1,9 +1,9 @@
 // include some needed libs.
+#include "../raylib-5.0_linux_amd64/include/raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
-#include "../raylib-5.0_linux_amd64/include/raylib.h"
+#include <time.h>
 
 // defining some constant -> window height, width, and player font size.
 #define WIN_W 1280
@@ -36,9 +36,7 @@ struct Tooltip {
 };
 
 // function to jump to the next turn.
-void incrementTurn(int *turn) {
-    *turn = (*turn == 0) ? 1 : 0;
-}
+void incrementTurn(int *turn) { *turn = (*turn == 0) ? 1 : 0; }
 
 // generate random int what else.
 int gen_random(int max) {
@@ -49,12 +47,12 @@ int gen_random(int max) {
 // generate the random dice.
 int setup_dice(char *str) {
     int move = gen_random(4);
-    snprintf(str, 2, "%d",move); 
+    snprintf(str, 2, "%d", move);
     return move;
 }
 
 void check_victory(int point[2], enum GameState *state, int turn) {
-    if (point[turn] >=7) {
+    if (point[turn] >= 7) {
         *state = WIN;
     }
 }
@@ -85,7 +83,7 @@ int check_move(const struct GameObject obj[7], size_t idx, int move) {
 }
 #endif
 
-int main (void) {
+int main(void) {
 
     srandom(time(NULL));
 
@@ -117,14 +115,16 @@ int main (void) {
     // define turn.
     int turn = 0;
 
-    //define scale.
+    // define scale.
     float board_scale = 4.0f;
     float bead_scale = 2.0f;
 
     // define rect for src and dest.
     Rectangle source_board = {0, 0, board_w, board_h};
-    Rectangle destination_board = {(float)WIN_W / 2 - (board_w * 2), (float)WIN_H / 2 - (board_h * 2), board_w * board_scale, board_h * board_scale};
-    Vector2 origin = {0,0};
+    Rectangle destination_board = {(float)WIN_W / 2 - (board_w * 2),
+        (float)WIN_H / 2 - (board_h * 2),
+        board_w * board_scale, board_h * board_scale};
+    Vector2 origin = {0, 0};
     Rectangle source_bead = {0, 0, bead_w, bead_h};
 
     const int DefaultGridX = destination_board.x + bead_w;
@@ -132,9 +132,11 @@ int main (void) {
     const int GridJump = 20 * board_scale;
 
     // black bead aka player 1.
-    Rectangle destination_bbead = {destination_board.x + (board_w * board_scale) - (bead_w * 7) * bead_scale, destination_board.y - board_h, bead_w * bead_scale, bead_h * bead_scale};
+    Rectangle destination_bbead = {
+        destination_board.x + (board_w * board_scale) - (bead_w * 7) * bead_scale,
+        destination_board.y - board_h, bead_w * bead_scale, bead_h * bead_scale};
     Rectangle destination_bbead_arr[7] = {};
-    for (int j = 0;j < 7; j++) {
+    for (int j = 0; j < 7; j++) {
         destination_bbead_arr[j] = destination_bbead;
         if (j > 0) {
             destination_bbead_arr[j].x += bead_w * bead_scale;
@@ -143,9 +145,11 @@ int main (void) {
     }
 
     // white bead aka the player 2.
-    Rectangle destination_wbead = {destination_board.x, (destination_board.y + board_h * board_scale) + 24, bead_w * bead_scale, bead_h * bead_scale};
+    Rectangle destination_wbead = {
+        destination_board.x, (destination_board.y + board_h * board_scale) + 24,
+        bead_w * bead_scale, bead_h * bead_scale};
     Rectangle destination_wbead_arr[7] = {};
-    for (int j = 0;j < 7; j++) {
+    for (int j = 0; j < 7; j++) {
         destination_wbead_arr[j] = destination_wbead;
         if (j > 0) {
             destination_wbead_arr[j].x += bead_w * bead_scale;
@@ -169,8 +173,16 @@ int main (void) {
 
     // define new bead button pos
     Rectangle new_bead_btn[2] = {
-        (Rectangle){ .x = destination_board.x, .y = destination_board.y - board_h - PLAYER_FONT_SIZE - 5, .width = 100, .height = 30},
-        (Rectangle){ .x = destination_board.x + (board_w * board_scale) - (18*8) + 40, .y = (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 10, .width = 100, .height = 30},
+        (Rectangle){.x = destination_board.x,
+            .y = destination_board.y - board_h - PLAYER_FONT_SIZE - 5,
+            .width = 100,
+            .height = 30},
+        (Rectangle){.x = destination_board.x + (board_w * board_scale) -
+            (18 * 8) + 40,
+            .y = (destination_board.y + board_h * board_scale) + 32 +
+            PLAYER_FONT_SIZE + 10,
+            .width = 100,
+            .height = 30},
     };
 
     // tooltip array
@@ -206,16 +218,24 @@ int main (void) {
             dvd.x += pwr.x * frame;
             dvd.y += pwr.y * frame;
 
-            if (dvd.x + dvd.width >= WIN_W || dvd.x < 0) pwr.x *= -1;
-            if (dvd.y + dvd.height >= WIN_H || dvd.y < 0) pwr.y *= -1;
+            if (dvd.x + dvd.width >= WIN_W || dvd.x < 0)
+                pwr.x *= -1;
+            if (dvd.y + dvd.height >= WIN_H || dvd.y < 0)
+                pwr.y *= -1;
 
             char *menu_buf = "TURG";
             char *menu_opt1_buf = "Press `p` to play.";
             char *menu_opt2_buf = "Press `q` to quit.";
             DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x00000098));
-            DrawText(menu_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_buf, 48)/2), ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
-            DrawText(menu_opt1_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt1_buf, 20)/2), ((float)WIN_H / 2) + 48, 20, WHITE);
-            DrawText(menu_opt2_buf, ((float)WIN_W / 2) - ((float)MeasureText(menu_opt2_buf, 20)/2), ((float)WIN_H / 2) + 48 + 25, 20, WHITE);
+            DrawText(menu_buf,
+                     ((float)WIN_W / 2) - ((float)MeasureText(menu_buf, 48) / 2),
+                     ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
+            DrawText(menu_opt1_buf,
+                     ((float)WIN_W / 2) - ((float)MeasureText(menu_opt1_buf, 20) / 2),
+                     ((float)WIN_H / 2) + 48, 20, WHITE);
+            DrawText(menu_opt2_buf,
+                     ((float)WIN_W / 2) - ((float)MeasureText(menu_opt2_buf, 20) / 2),
+                     ((float)WIN_H / 2) + 48 + 25, 20, WHITE);
 
             EndDrawing();
 
@@ -223,19 +243,25 @@ int main (void) {
         }
 
         for (int i = 0; i < 7; i++) {
-            if (player[0][i].pos == 0) player[0][i].onBoard = 0;
-            if (player[1][i].pos == 0) player[1][i].onBoard = 0;
+            if (player[0][i].pos == 0)
+                player[0][i].onBoard = 0;
+            if (player[1][i].pos == 0)
+                player[1][i].onBoard = 0;
         }
 
         // Handle input.
 #ifdef DEBUG_MODE
 
-        if (IsKeyPressed(' ') || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
+        if (IsKeyPressed(' ') ||
+            (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) &&
+            IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
             incrementTurn(&turn);
             move = setup_dice(str);
         }
 #else
-        if (IsKeyPressed(' ') && move == 0 || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
+        if (IsKeyPressed(' ') && move == 0 ||
+            (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) &&
+            IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && move <= 0)) {
             incrementTurn(&turn);
             move = setup_dice(str);
         }
@@ -260,7 +286,9 @@ int main (void) {
 
         // create a bool to check if the current dice pos is already used.
         int ignore_key = 0;
-        if (IsKeyPressed(KEY_N) && move > 0 || (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
+        if (IsKeyPressed(KEY_N) && move > 0 ||
+            (CheckCollisionPointRec(cursor_pos, new_bead_btn[turn]) &&
+            IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
             for (int i = 0; i < 7; i++) {
                 if (player[turn][i].pos == move) {
                     ignore_key = 1;
@@ -269,7 +297,8 @@ int main (void) {
             }
             if (ignore_key == 0) {
                 for (int i = 0; i < 7; i++) {
-                    if (player[turn][i].onBoard == 0 && player[turn][i].finished == 0 && player[turn][i].pos == 0) {
+                    if (player[turn][i].onBoard == 0 && player[turn][i].finished == 0 &&
+                        player[turn][i].pos == 0) {
 #ifdef CUSTOM_MODE
                         if (check_move(player[turn], i, move) == 1) {
                             ignore_key = 1;
@@ -277,10 +306,11 @@ int main (void) {
                         }
 #endif
                         player[turn][i].onBoard = 1;
-                        player[turn][i].finished= 0;
+                        player[turn][i].finished = 0;
                         player[turn][i].pos = move;
                         cameout[turn] += 1;
-                        if (move != 4) incrementTurn(&turn);
+                        if (move != 4)
+                            incrementTurn(&turn);
                         move = setup_dice(str);
                         break;
                     }
@@ -296,7 +326,7 @@ int main (void) {
             for (int j = 0; j < 2; j++) {
                 for (int i = 0; i < 7; i++) {
                     player[j][i].onBoard = 0;
-                    player[j][i].finished= 0;
+                    player[j][i].finished = 0;
                     player[j][i].pos = 0;
                 }
                 cameout[j] = 0;
@@ -313,7 +343,7 @@ int main (void) {
             for (int j = 0; j < 2; j++) {
                 for (int i = 0; i < 7; i++) {
                     player[j][i].onBoard = 0;
-                    player[j][i].finished= 0;
+                    player[j][i].finished = 0;
                     player[j][i].pos = 0;
                 }
                 cameout[j] = 0;
@@ -325,9 +355,11 @@ int main (void) {
         }
 
         // handle index as the keys.
-        for (int i  = 0; i < 7; i++) {
-            if ((IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 && player[turn][i].finished == 0)
-                || (CheckCollisionPointRec(cursor_pos, tooltip_pos[i].box) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
+        for (int i = 0; i < 7; i++) {
+            if ((IsKeyPressed(i + 1 + '0') && player[turn][i].onBoard == 1 &&
+                player[turn][i].finished == 0) ||
+                (CheckCollisionPointRec(cursor_pos, tooltip_pos[i].box) &&
+                IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
                 for (int k = 0; k < 7; k++) {
                     if (player[turn][i].pos + move == player[turn][k].pos) {
                         ignore_key = 1;
@@ -342,10 +374,12 @@ int main (void) {
                 }
                 // def new var that check if its valid
                 int valid = 1;
-                if (ignore_key == 0 && player[turn][i].pos < 15 && player[turn][i].pos + move <= 15) {
+                if (ignore_key == 0 && player[turn][i].pos < 15 &&
+                    player[turn][i].pos + move <= 15) {
                     player[turn][i].pos += move;
                     int invert = 0;
-                    if (turn == 0) invert = 1;
+                    if (turn == 0)
+                        invert = 1;
                     for (int k = 0; k < 7; k++) {
                         // check for the special tile
                         if (player[turn][i].pos == 8 && player[invert][k].pos == 8) {
@@ -354,7 +388,8 @@ int main (void) {
                             break;
                         }
                         // capturing the other player piece
-                        if (player[invert][k].pos == player[turn][i].pos && player[turn][i].pos >= 5 && player[turn][i].pos <= 12) {
+                        if (player[invert][k].pos == player[turn][i].pos &&
+                            player[turn][i].pos >= 5 && player[turn][i].pos <= 12) {
                             player[invert][k].pos = 0;
                             player[invert][k].onBoard = 0;
                             cameout[invert] -= 1;
@@ -364,12 +399,16 @@ int main (void) {
 
                     if (valid == 1) {
                         int check_me = player[turn][i].pos - move;
-                        if (check_me + move == 8) extra_turn = 1;
-                        if (check_me + move == 4) extra_turn = 1;
-                        if (check_me + move == 14) extra_turn = 1;
+                        if (check_me + move == 8)
+                            extra_turn = 1;
+                        if (check_me + move == 4)
+                            extra_turn = 1;
+                        if (check_me + move == 14)
+                            extra_turn = 1;
                     }
 
-                    // finish checker at this point bcs the only way to win is from tapping this button.
+                    // finish checker at this point bcs the only way to win is from
+                    // tapping this button.
                     for (int i = 0; i < 7; i++) {
                         if (player[turn][i].pos == 15) {
                             point[turn] += 1;
@@ -403,50 +442,75 @@ int main (void) {
         // draw the dice nums, text and some tooltip at the bottom.
         Color tmp_color_arr[2] = {BLACK, RED};
         int index_to_use = 0;
-        if (move <= 0 ) {
+        if (move <= 0) {
             index_to_use = 1;
-            DrawText("Press `space` to skip turn.", ((float)WIN_W / 2) - ((float)MeasureText("Press `space` to skip turn.", 24) / 2), (48 * 2) + 24, 24, BLACK);
+            DrawText("Press `space` to skip turn.",
+                     ((float)WIN_W / 2) -
+                     ((float)MeasureText("Press `space` to skip turn.", 24) / 2),
+                     (48 * 2) + 24, 24, BLACK);
         }
-        DrawText(str, ((float)WIN_W / 2) - ((float)MeasureText(str, 48) / 2), 48, 48, tmp_color_arr[index_to_use]);
-        DrawText("Dice", ((float)WIN_W / 2) - ((float)MeasureText("Dice", 24) / 2), 48 * 2, 24, BLACK);
-        DrawText("Select the desired index to move bead.", 0, WIN_H - 20, 20, BLACK);
+        DrawText(str, ((float)WIN_W / 2) - ((float)MeasureText(str, 48) / 2), 48,
+                 48, tmp_color_arr[index_to_use]);
+        DrawText("Dice", ((float)WIN_W / 2) - ((float)MeasureText("Dice", 24) / 2),
+                 48 * 2, 24, BLACK);
+        DrawText("Select the desired index to move bead.", 0, WIN_H - 20, 20,
+                 BLACK);
         DrawText("Press `n` to enter with new bead.", 0, WIN_H - 20 * 2, 20, BLACK);
         // DrawText("The Royal Game of Ur", 10, 10, 36, BLACK);
 
         // draw the board.
         DrawTexturePro(board, source_board, destination_board, origin, 0.0f, WHITE);
-        
+
         // draw the player tooltip
         char buf_poin[2];
         snprintf(buf_poin, 2, "%d", point[turn]);
         if (turn == 0) {
             DrawText(buf_poin, WIN_W - MeasureText(buf_poin, 48) - 10, 10, 48, BLACK);
-            DrawText("Player 1", destination_board.x, destination_board.y - board_h, PLAYER_FONT_SIZE, BLACK);
+            DrawText("Player 1", destination_board.x, destination_board.y - board_h,
+                     PLAYER_FONT_SIZE, BLACK);
 
             // new bead button
             DrawRectangleRec(new_bead_btn[0], BLACK);
             if (move > 0) {
-                DrawText("New Bead", destination_board.x + (MeasureText("New Bead", 16) / 5.0f), destination_board.y - board_h - PLAYER_FONT_SIZE, 16, WHITE);
+                DrawText("New Bead",
+                         destination_board.x + (MeasureText("New Bead", 16) / 5.0f),
+                         destination_board.y - board_h - PLAYER_FONT_SIZE, 16, WHITE);
             } else {
-                DrawText("Skip", destination_board.x + (MeasureText("Skip", 16) + 4), destination_board.y - board_h - PLAYER_FONT_SIZE, 16, WHITE);
+                DrawText("Skip", destination_board.x + (MeasureText("Skip", 16) + 4),
+                         destination_board.y - board_h - PLAYER_FONT_SIZE, 16, WHITE);
             }
             for (int i = cameout[0]; i < 7; i++) {
-                DrawTexturePro(blackb, source_bead, destination_bbead_arr[i], origin, 0.0f, WHITE);
+                DrawTexturePro(blackb, source_bead, destination_bbead_arr[i], origin,
+                               0.0f, WHITE);
             }
         } else {
             DrawText(buf_poin, WIN_W - MeasureText(buf_poin, 48) - 10, 10, 48, WHITE);
-            DrawText("Player 2", destination_board.x + (board_w * board_scale) - (18 * 8), (destination_board.y + board_h * board_scale) + 32, PLAYER_FONT_SIZE, WHITE);
+            DrawText("Player 2",
+                     destination_board.x + (board_w * board_scale) - (18 * 8),
+                     (destination_board.y + board_h * board_scale) + 32,
+                     PLAYER_FONT_SIZE, WHITE);
 
             // new bead button
             DrawRectangleRec(new_bead_btn[1], WHITE);
             if (move > 0) {
-                DrawText("New Bead", destination_board.x + (board_w * board_scale) - (18 *8) + 40 + (MeasureText("New Bead", 16) / 5.0f), (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 15, 16, BLACK);
+                DrawText("New Bead",
+                         destination_board.x + (board_w * board_scale) - (18 * 8) + 40 +
+                         (MeasureText("New Bead", 16) / 5.0f),
+                         (destination_board.y + board_h * board_scale) + 32 +
+                         PLAYER_FONT_SIZE + 15,
+                         16, BLACK);
             } else {
-                DrawText("Skip", destination_board.x + (board_w * board_scale) - (18 *8) + 40 + (MeasureText("Skip", 16) + 4), (destination_board.y + board_h * board_scale) + 32 + PLAYER_FONT_SIZE + 15, 16, BLACK);
+                DrawText("Skip",
+                         destination_board.x + (board_w * board_scale) - (18 * 8) + 40 +
+                         (MeasureText("Skip", 16) + 4),
+                         (destination_board.y + board_h * board_scale) + 32 +
+                         PLAYER_FONT_SIZE + 15,
+                         16, BLACK);
             }
 
             for (int i = 0; i < 7 - cameout[1]; i++) {
-                DrawTexturePro(whiteb, source_bead, destination_wbead_arr[i], origin, 0.0f, WHITE);
+                DrawTexturePro(whiteb, source_bead, destination_wbead_arr[i], origin,
+                               0.0f, WHITE);
             }
         }
 
@@ -460,12 +524,13 @@ int main (void) {
             for (int i = 0; i < 7; i++) {
                 if (player[j][i].onBoard && !player[j][i].finished) {
                     int pos = player[j][i].pos;
-                    if (pos == 0) {}
+                    if (pos == 0) {
+                    }
                     Rectangle bead_dest = {};
                     if (pos >= 1 && pos <= 4) {
                         int grid = 3 + pos;
-                        bead_dest.x = DefaultGridX + (grid*GridJump);
-                        bead_dest.y = DefaultGridY + (2*GridJump);
+                        bead_dest.x = DefaultGridX + (grid * GridJump);
+                        bead_dest.y = DefaultGridY + (2 * GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
@@ -486,7 +551,7 @@ int main (void) {
                     }
                     if (pos == 13) {
                         bead_dest.x = DefaultGridX;
-                        bead_dest.y = DefaultGridY + (2*GridJump);
+                        bead_dest.y = DefaultGridY + (2 * GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
@@ -495,23 +560,27 @@ int main (void) {
                     }
                     if (pos == 14) {
                         bead_dest.x = DefaultGridX + GridJump;
-                        bead_dest.y = DefaultGridY + (2*GridJump);
+                        bead_dest.y = DefaultGridY + (2 * GridJump);
                         bead_dest.width = bead_w * bead_scale;
                         bead_dest.height = bead_h * bead_scale;
                         if (j == 0) {
                             bead_dest.y = DefaultGridY;
                         }
                     }
-                    DrawTexturePro(color_arr[j], source_bead, bead_dest, origin, 0.0f, WHITE);
+                    DrawTexturePro(color_arr[j], source_bead, bead_dest, origin, 0.0f,
+                                   WHITE);
                     if (j == turn) {
                         bead_dest.y -= (bead_h * bead_scale) + 15;
                         tooltip_pos[i].box = bead_dest;
                         tooltip_pos[i].text_pos = bead_dest;
                         char tmp_buf[3];
-                        snprintf(tmp_buf, 2, "%d",i + 1); 
+                        snprintf(tmp_buf, 2, "%d", i + 1);
                         strncpy(tooltip_pos[i].text, tmp_buf, 2);
-                        tooltip_pos[i].text_pos.x = bead_dest.x + ((float)bead_dest.width / 2) - ((float)MeasureText(tmp_buf, 24)/2);
-                        tooltip_pos[i].text_pos.y = bead_dest.y + ((float)bead_dest.height/4);
+                        tooltip_pos[i].text_pos.x = bead_dest.x +
+                            ((float)bead_dest.width / 2) -
+                            ((float)MeasureText(tmp_buf, 24) / 2);
+                        tooltip_pos[i].text_pos.y =
+                            bead_dest.y + ((float)bead_dest.height / 4);
                     }
                 }
             }
@@ -521,20 +590,24 @@ int main (void) {
         Color team_color_text[2] = {WHITE, BLACK};
         for (int i = 0; i < 7; i++) {
             DrawRectanglePro(tooltip_pos[i].box, origin, 0.0f, team_color[turn]);
-            DrawText(tooltip_pos[i].text, tooltip_pos[i].text_pos.x, tooltip_pos[i].text_pos.y, 24, team_color_text[turn]);
+            DrawText(tooltip_pos[i].text, tooltip_pos[i].text_pos.x,
+                     tooltip_pos[i].text_pos.y, 24, team_color_text[turn]);
         }
 
         if (state == WIN) {
             char win_buf[32] = {};
             char *res_buf = "Press `r` to reset the game.";
-            snprintf(win_buf, 32, "PLAYER %d WIN", winner_idx+1);
+            snprintf(win_buf, 32, "PLAYER %d WIN", winner_idx + 1);
             DrawRectangle(0, 0, WIN_W, WIN_H, GetColor(0x000000cc));
-            DrawText(win_buf, ((float)WIN_W / 2) - ((float)MeasureText(win_buf, 48)/2), ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
-            DrawText(res_buf, ((float)WIN_W / 2) - ((float)MeasureText(res_buf, 24)/2), ((float)WIN_H / 2) - ((float)48 / 2) + 48, 24, GRAY);
+            DrawText(win_buf,
+                     ((float)WIN_W / 2) - ((float)MeasureText(win_buf, 48) / 2),
+                     ((float)WIN_H / 2) - ((float)48 / 2), 48, WHITE);
+            DrawText(res_buf,
+                     ((float)WIN_W / 2) - ((float)MeasureText(res_buf, 24) / 2),
+                     ((float)WIN_H / 2) - ((float)48 / 2) + 48, 24, GRAY);
         }
 
         EndDrawing();
-
     }
     CloseWindow();
 }
