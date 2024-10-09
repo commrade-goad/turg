@@ -3,3 +3,6 @@ build: ./src/main.c
 
 run: ./turg
 	./turg
+
+main: ./src/main.c ./turg
+	build

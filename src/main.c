@@ -13,7 +13,7 @@
 // use real board texture
 #define USE_REAL_BOARD_TEXT
 
-// #define DEBUG_MODE
+#define DEBUG_MODE
 
 // create game state
 enum GameState {
@@ -269,8 +269,10 @@ int main(void) {
 
 #ifdef DEBUG_MODE
         if (IsKeyPressed(KEY_X)) {
-            move = 0;
-            str[0] = '0';
+            /* move = 0;
+            str[0] = '0'; */
+            player[turn][0].pos = 8;
+            player[turn][0].onBoard = true;
         }
 #endif
 
@@ -386,6 +388,7 @@ int main(void) {
                         // check for the special tile
                         if (player[turn][i].pos == 8 && player[invert][k].pos == 8) {
                             player[turn][i].pos -= move;
+                            printf("not valid\n");
                             valid = 0;
                             break;
                         }
@@ -422,13 +425,25 @@ int main(void) {
                     winner_idx = turn;
                     check_victory(point, &state, turn);
 
-                    // add extra turn.
-                    if (!extra_turn) {
-                        incrementTurn(&turn);
-                    } else {
-                        extra_turn = 0;
+                    if (valid == true) {
+                        // add extra turn.
+                        if (!extra_turn) {
+                            incrementTurn(&turn);
+                        } else {
+                            extra_turn = 0;
+                        }
+                        move = setup_dice(str);
                     }
-                    move = setup_dice(str);
+
+                    int on_board_count = 0;
+                    if (valid == false && player[turn][i].pos + move == 8) {
+                        for (int a = 0; a < 7; a++) {
+                            if (player[turn][a].onBoard == true) on_board_count += 1;
+                        }
+                        if (on_board_count < 2){
+                            move = setup_dice(str);
+                        }
+                    }
                 }
                 ignore_key = 0;
             }
